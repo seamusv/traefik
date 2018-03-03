@@ -40,6 +40,11 @@ func (rw *HeaderRewriter) Rewrite(req *http.Request) {
 		}
 	}
 
+	if req.TLS != nil && len(req.TLS.PeerCertificates) > 0 {
+		req.Header.Set("X-SSL-Client-CN", req.TLS.PeerCertificates[0].Subject.CommonName)
+		req.Header.Set("X-SSL-Client-Serial", req.TLS.PeerCertificates[0].Subject.SerialNumber)
+	}
+
 	xfProto := req.Header.Get(XForwardedProto)
 	if xfProto == "" {
 		if req.TLS != nil {
